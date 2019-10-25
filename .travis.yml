@@ -12,7 +12,7 @@ matrix:
     before_script:
     - export CMAKE=cmake
     before_deploy:
-    - if ! [ $TRAVIS_TAG ]; then git tag "$TRAVIS_BRANCH-v$TRAVIS_BUILD_NUMBER"; fi
+    - if ! [ $TRAVIS_TAG ]; then echo $TRAVIS_TAG; git tag "$TRAVIS_BRANCH-v$TRAVIS_BUILD_NUMBER"; fi
     - cd ${TRAVIS_BUILD_DIR}/build/bin
     - zip -r "$TRAVIS_BRANCH-$TRAVIS_OS_NAME-v$TRAVIS_BUILD_NUMBER.zip" Vita3K.app
     deploy:
