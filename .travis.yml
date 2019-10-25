@@ -4,46 +4,46 @@ cache: ccache
 
 matrix:
   include:
-    - os: osx
-      osx_image: xcode9.3
-      install:
-      - HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache
-      - export PATH="/usr/local/opt/ccache/libexec:$PATH"
-      before_script:
-      - export CMAKE=cmake
-      before_deploy:
-      - if [ $TRAVIS_BRANCH-v$TRAVIS_BUILD_NUMBER IS NOT present ]; then git tag "$TRAVIS_BRANCH-v$TRAVIS_BUILD_NUMBER"; fi
-      - cd ${TRAVIS_BUILD_DIR}/build/bin
-      - zip -r "$TRAVIS_BRANCH-$TRAVIS_OS_NAME-v$TRAVIS_BUILD_NUMBER.zip" Vita3K.app
-      deploy:
-        provider: releases
-        api_key:
-          secure: pFNcUXEfM70zz5VvaMaXR05pdXJOFVQg3mEZLDyrQmaHXy7joGCQE+ZkGYsExc0dcpD+0nT0XpLT9rEOip5iYdhy3u7ro3mnZT1an7wNLqgTqxRMSp0k1aNhK4h9v64rdGEcvIETs/YgIMtv2hN7C7kXmcmvbMi3OLA4/IQKutjX8/PwT+f7CikWX13RgUva0S5OWIBE22LDA25YwNrE2My/M5mQNN4sJIvoRRYxeNS/7NQejK3/Y3pr4SOVWONrzMOnQ7R3SHi4tAnqLWtpC6qmbd2tZFtvrX/pgVEr12lbCO6Mr5kyxD5c6n7+pr8qPJUOpfU6dd8yVDnzZoB4V9fnmC7q5FF4/WYIvOoq1FOz7UgMd+AmlDduhaMeX49EIFHw/vSZfnzpP+vPzRirrvp/XnppFhXhNtuiCjwxgLS6XNCi3bd67x9b2QCgfQ9HWqirGZ+COYQNjWOiy1rOM2dGekviEvPVkkp6si3Dj07gFToepQQdvRUzn3cZZUvnI8TgPc7KHhl9qbDAkDUl7CB3w5bE/sqEth1OjlUA6LsUyDcBLkEfkPZ3IsJy33mzchDlxoq9cm0Q6z2k8Eha2DxDa1og2dcGMXD5RoFOC0PJ/Ypb8zOxxZwZUF4sfacpuO+K+2aUllAwJyE3wANnroQvYvt0CFJJu21xRztm2Vs=
-        file: "$TRAVIS_BRANCH-$TRAVIS_OS_NAME-v$TRAVIS_BUILD_NUMBER.zip"
-        skip_cleanup: true
-        on:
-          branch: master
-          repo: Vita3K/Vita3K
-      script: bash $TRAVIS_BUILD_DIR/.travis/macos/build.sh
-    - os: linux
-      sudo: required
-      services: docker
-      script: bash $TRAVIS_BUILD_DIR/.travis/linux/build.sh
-      before_deploy:
-      - if [ $TRAVIS_BRANCH-v$TRAVIS_BUILD_NUMBER IS NOT present ]; then git tag "$TRAVIS_BRANCH-v$TRAVIS_BUILD_NUMBER"; fi
-      - sudo chown -R travis:travis ${TRAVIS_BUILD_DIR}
-      - cd ${TRAVIS_BUILD_DIR}/build/bin
-      - zip -r "$TRAVIS_BRANCH-$TRAVIS_OS_NAME-v$TRAVIS_BUILD_NUMBER.zip" .
-      deploy:
-        provider: releases
-        api_key:
-          secure: pFNcUXEfM70zz5VvaMaXR05pdXJOFVQg3mEZLDyrQmaHXy7joGCQE+ZkGYsExc0dcpD+0nT0XpLT9rEOip5iYdhy3u7ro3mnZT1an7wNLqgTqxRMSp0k1aNhK4h9v64rdGEcvIETs/YgIMtv2hN7C7kXmcmvbMi3OLA4/IQKutjX8/PwT+f7CikWX13RgUva0S5OWIBE22LDA25YwNrE2My/M5mQNN4sJIvoRRYxeNS/7NQejK3/Y3pr4SOVWONrzMOnQ7R3SHi4tAnqLWtpC6qmbd2tZFtvrX/pgVEr12lbCO6Mr5kyxD5c6n7+pr8qPJUOpfU6dd8yVDnzZoB4V9fnmC7q5FF4/WYIvOoq1FOz7UgMd+AmlDduhaMeX49EIFHw/vSZfnzpP+vPzRirrvp/XnppFhXhNtuiCjwxgLS6XNCi3bd67x9b2QCgfQ9HWqirGZ+COYQNjWOiy1rOM2dGekviEvPVkkp6si3Dj07gFToepQQdvRUzn3cZZUvnI8TgPc7KHhl9qbDAkDUl7CB3w5bE/sqEth1OjlUA6LsUyDcBLkEfkPZ3IsJy33mzchDlxoq9cm0Q6z2k8Eha2DxDa1og2dcGMXD5RoFOC0PJ/Ypb8zOxxZwZUF4sfacpuO+K+2aUllAwJyE3wANnroQvYvt0CFJJu21xRztm2Vs=
-        file: "$TRAVIS_BRANCH-$TRAVIS_OS_NAME-v$TRAVIS_BUILD_NUMBER.zip"
-        skip_cleanup: true
-        on:
-          branch: master
-          repo: Vita3K/Vita3K
+  - os: osx
+    osx_image: xcode9.3
+    install:
+    - HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache
+    - export PATH="/usr/local/opt/ccache/libexec:$PATH"
+    before_script:
+    - export CMAKE=cmake
+    before_deploy:
+    - if [ $TRAVIS_BRANCH-v$TRAVIS_BUILD_NUMBER IS NOT present ]; then git tag "$TRAVIS_BRANCH-v$TRAVIS_BUILD_NUMBER"; fi
+    - cd ${TRAVIS_BUILD_DIR}/build/bin
+    - zip -r "$TRAVIS_BRANCH-$TRAVIS_OS_NAME-v$TRAVIS_BUILD_NUMBER.zip" Vita3K.app
+    deploy:
+      provider: releases
+      api_key:
+        secure: pY1wyyP303DEYjc4mk1gCpFnjDf4pRj3q7XFkV15Ax9nhZsHZboFTnAwvWWHOswksNiGpJKj71Ts/fn1Q1ZNdfpbBDGbU7RL/wO2jVX+2desx71VhD9gCrfkSHvr7W6l88y5NOnBNXuZRTuU+6I74hDvvHklymge04TueEtH7OLIPxjDwDwLS+QrZinxOXhrSXpe5z/JuUZ5Q91rp59WsCvbg7VVrntitrW/x3J4LjYYHzOf5KO49Vgz3SFpondnXZxEg16veZLOu59YEFa4cib26s92wkhFrn5/JfLLGhnGvjrvE2ETG0P8bL0DO9XMi0r0jETiRis4+CjjKlHrJMhhv7KPubXgrDveonzzX+VWmyj1F9b8KlipQX7zsbd62hTg6bYl97no/kG/W4vF21PcNBHRLhVhEpsEOrp/cBZJWDKBynheAQ33GpnMlD23fn1I/W2Rm6DuCNkrly8zzy4crqbP4TpRb5EXNN6k7+yPPGxdeka4nOYfeaw3e9io618acWIoAuicr2JNPzTHveaiWOvFBtbThlHUNI8QL6k7FR/5BOqn/8+FuygzvTI4ZybtJKhbenChcIyjWFdCjFOkkUY/OK2k6v1zMcc5kWNT+//1rgY9ZA1wjQ0S9iIslhkBCtS9rXopI6xUak23NsgjqRzC9ZG+PL056H9kpT8=
+      file: "$TRAVIS_BRANCH-$TRAVIS_OS_NAME-v$TRAVIS_BUILD_NUMBER.zip"
+      skip_cleanup: true
+      on:
+        branch: master
+        repo: Vita3K/Vita3K
+    script: bash $TRAVIS_BUILD_DIR/.travis/macos/build.sh
+  - os: linux
+    sudo: required
+    services: docker
+    script: bash $TRAVIS_BUILD_DIR/.travis/linux/build.sh
+    before_deploy:
+    - if [ $TRAVIS_BRANCH-v$TRAVIS_BUILD_NUMBER IS NOT present ]; then git tag "$TRAVIS_BRANCH-v$TRAVIS_BUILD_NUMBER"; fi
+    - sudo chown -R travis:travis ${TRAVIS_BUILD_DIR}
+    - cd ${TRAVIS_BUILD_DIR}/build/bin
+    - zip -r "$TRAVIS_BRANCH-$TRAVIS_OS_NAME-v$TRAVIS_BUILD_NUMBER.zip" .
+    deploy:
+      provider: releases
+      api_key:
+        secure: pY1wyyP303DEYjc4mk1gCpFnjDf4pRj3q7XFkV15Ax9nhZsHZboFTnAwvWWHOswksNiGpJKj71Ts/fn1Q1ZNdfpbBDGbU7RL/wO2jVX+2desx71VhD9gCrfkSHvr7W6l88y5NOnBNXuZRTuU+6I74hDvvHklymge04TueEtH7OLIPxjDwDwLS+QrZinxOXhrSXpe5z/JuUZ5Q91rp59WsCvbg7VVrntitrW/x3J4LjYYHzOf5KO49Vgz3SFpondnXZxEg16veZLOu59YEFa4cib26s92wkhFrn5/JfLLGhnGvjrvE2ETG0P8bL0DO9XMi0r0jETiRis4+CjjKlHrJMhhv7KPubXgrDveonzzX+VWmyj1F9b8KlipQX7zsbd62hTg6bYl97no/kG/W4vF21PcNBHRLhVhEpsEOrp/cBZJWDKBynheAQ33GpnMlD23fn1I/W2Rm6DuCNkrly8zzy4crqbP4TpRb5EXNN6k7+yPPGxdeka4nOYfeaw3e9io618acWIoAuicr2JNPzTHveaiWOvFBtbThlHUNI8QL6k7FR/5BOqn/8+FuygzvTI4ZybtJKhbenChcIyjWFdCjFOkkUY/OK2k6v1zMcc5kWNT+//1rgY9ZA1wjQ0S9iIslhkBCtS9rXopI6xUak23NsgjqRzC9ZG+PL056H9kpT8=
+      file: "$TRAVIS_BRANCH-$TRAVIS_OS_NAME-v$TRAVIS_BUILD_NUMBER.zip"
+      skip_cleanup: true
+      on:
+        branch: master
+        repo: Vita3K/Vita3K
 
 branches:
   except:
-    - "/master-v[0-9]/"
+  - "/master-v[0-9]/"
