@@ -957,6 +957,14 @@ EXPORT(int, sceSaveDataDialogGetResult, Ptr<SceSaveDataDialogResult> result) {
         return RET_ERROR(SCE_COMMON_DIALOG_ERROR_NULL);
     }
 
+    if (host.common_dialog.status != SCE_COMMON_DIALOG_STATUS_FINISHED && host.common_dialog.substatus != SCE_COMMON_DIALOG_STATUS_FINISHED) {
+        return RET_ERROR(SCE_COMMON_DIALOG_ERROR_NOT_FINISHED);
+    }
+
+    if (strcmp(reinterpret_cast<char *>(result.get(host.mem)->reserved), "\0") != 0) {
+        return RET_ERROR(SCE_SAVEDATA_DIALOG_ERROR_PARAM);
+    }
+
     result.get(host.mem)->mode = host.common_dialog.savedata.mode;
     result.get(host.mem)->result = host.common_dialog.result;
     result.get(host.mem)->buttonId = host.common_dialog.savedata.button_id;
@@ -997,6 +1005,7 @@ EXPORT(int, sceSaveDataDialogInit, const Ptr<SceSaveDataDialogParam> param) {
     SceSaveDataDialogFixedParam *fixed_param;
     SceSaveDataDialogListParam *list_param;
     SceSaveDataDialogUserMessageParam *user_message;
+    SceSaveDataDialogSystemMessageParam *sys_message;
     std::vector<SceAppUtilSaveDataSlot> slot_list;
     std::vector<SceAppUtilSaveDataSlotParam> slot_param;
     std::string thumbnail_path;
@@ -1121,6 +1130,130 @@ EXPORT(int, sceSaveDataDialogInit, const Ptr<SceSaveDataDialogParam> param) {
         case SCE_SAVEDATA_DIALOG_BUTTON_TYPE_NONE:
             host.common_dialog.savedata.btn_num = 0;
             host.common_dialog.savedata.btn_val[0] = SCE_SAVEDATA_DIALOG_BUTTON_ID_INVALID;
+            break;
+        }
+        break;
+    case SCE_SAVEDATA_DIALOG_MODE_SYSTEM_MSG:
+        sys_message = p->sysMsgParam.get(host.mem);
+        host.common_dialog.savedata.icon_loaded.resize(1);
+        host.common_dialog.savedata.slot_info.resize(1);
+        host.common_dialog.savedata.title.resize(1);
+        host.common_dialog.savedata.subtitle.resize(1);
+        host.common_dialog.savedata.details.resize(1);
+        host.common_dialog.savedata.has_date.resize(1);
+        host.common_dialog.savedata.date.resize(1);
+        host.common_dialog.savedata.icon_buffer.resize(1);
+        host.common_dialog.savedata.slot_id.resize(1);
+        host.common_dialog.savedata.slot_id[0] = sys_message->targetSlot.id;
+        host.common_dialog.savedata.mode_to_display = SCE_SAVEDATA_DIALOG_MODE_FIXED;
+        if (!host.common_dialog.savedata.slot_info[0].isExist) {
+            auto empty_param = sys_message->targetSlot.emptyParam.get(host.mem);
+            check_empty_param(host, empty_param);
+        }
+        switch (sys_message->sysMsgType) {
+        case SCE_SAVEDATA_DIALOG_SYSMSG_TYPE_NODATA:
+            host.common_dialog.savedata.msg = "There is no saved data.";
+            host.common_dialog.savedata.btn_num = 1;
+            host.common_dialog.savedata.btn[0] = "OK";
+            host.common_dialog.savedata.btn_val[0] = SCE_SAVEDATA_DIALOG_BUTTON_ID_OK;
+            break;
+        case SCE_SAVEDATA_DIALOG_SYSMSG_TYPE_CONFIRM:
+            switch (host.common_dialog.savedata.display_type) {
+            case SCE_SAVEDATA_DIALOG_TYPE_SAVE:
+                host.common_dialog.savedata.msg = "Do you want to save the data?";
+                break;
+            case SCE_SAVEDATA_DIALOG_TYPE_LOAD:
+                host.common_dialog.savedata.msg = "Do you want to load this saved data?";
+                break;
+            case SCE_SAVEDATA_DIALOG_TYPE_DELETE:
+                host.common_dialog.savedata.msg = "Do you want to delete this saved data?";
+                break;
+            }
+            host.common_dialog.savedata.btn_num = 2;
+            host.common_dialog.savedata.btn[0] = "NO";
+            host.common_dialog.savedata.btn_val[0] = SCE_SAVEDATA_DIALOG_BUTTON_ID_NO;
+            host.common_dialog.savedata.btn[1] = "YES";
+            host.common_dialog.savedata.btn_val[1] = SCE_SAVEDATA_DIALOG_BUTTON_ID_YES;
+            break;
+        case SCE_SAVEDATA_DIALOG_SYSMSG_TYPE_OVERWRITE:
+            host.common_dialog.savedata.msg = "Do you want to overwrite this saved data?";
+            host.common_dialog.savedata.btn_num = 2;
+            host.common_dialog.savedata.btn[0] = "NO";
+            host.common_dialog.savedata.btn_val[0] = SCE_SAVEDATA_DIALOG_BUTTON_ID_NO;
+            host.common_dialog.savedata.btn[1] = "YES";
+            host.common_dialog.savedata.btn_val[1] = SCE_SAVEDATA_DIALOG_BUTTON_ID_YES;
+            break;
+        case SCE_SAVEDATA_DIALOG_SYSMSG_TYPE_NOSPACE:
+            host.common_dialog.savedata.msg = "There is not enough free space on the memory card.";
+            host.common_dialog.savedata.btn_num = 0;
+            break;
+        case SCE_SAVEDATA_DIALOG_SYSMSG_TYPE_PROGRESS:
+            host.common_dialog.savedata.btn_num = 0;
+            switch (host.common_dialog.savedata.display_type) {
+            case SCE_SAVEDATA_DIALOG_TYPE_SAVE:
+                host.common_dialog.savedata.msg = "Saving...\nDo not power off the system or close the application";
+                break;
+            case SCE_SAVEDATA_DIALOG_TYPE_LOAD:
+                host.common_dialog.savedata.msg = "Loading...";
+                break;
+            case SCE_SAVEDATA_DIALOG_TYPE_DELETE:
+                host.common_dialog.savedata.msg = "Please Wait...";
+                break;
+            }
+            break;
+        case SCE_SAVEDATA_DIALOG_SYSMSG_TYPE_FINISHED:
+            switch (host.common_dialog.savedata.display_type) {
+            case SCE_SAVEDATA_DIALOG_TYPE_SAVE:
+                host.common_dialog.savedata.msg = "Saving complete.";
+                break;
+            case SCE_SAVEDATA_DIALOG_TYPE_LOAD:
+                host.common_dialog.savedata.msg = "Loading complete.";
+                break;
+            case SCE_SAVEDATA_DIALOG_TYPE_DELETE:
+                host.common_dialog.savedata.msg = "Deletion complete.";
+                break;
+            }
+            host.common_dialog.savedata.btn_num = 1;
+            host.common_dialog.savedata.btn[0] = "OK";
+            host.common_dialog.savedata.btn_val[0] = SCE_SAVEDATA_DIALOG_BUTTON_ID_OK;
+            break;
+        case SCE_SAVEDATA_DIALOG_SYSMSG_TYPE_CONFIRM_CANCEL:
+            switch (host.common_dialog.savedata.display_type) {
+            case SCE_SAVEDATA_DIALOG_TYPE_SAVE:
+                host.common_dialog.savedata.msg = "Do you want to cancel saving?";
+                break;
+            case SCE_SAVEDATA_DIALOG_TYPE_LOAD:
+                host.common_dialog.savedata.msg = "Do you want to cancel loading?";
+                break;
+            case SCE_SAVEDATA_DIALOG_TYPE_DELETE:
+                host.common_dialog.savedata.msg = "Do you want to cancel deleting?";
+                break;
+            }
+            host.common_dialog.savedata.btn_num = 2;
+            host.common_dialog.savedata.btn[0] = "NO";
+            host.common_dialog.savedata.btn_val[0] = SCE_SAVEDATA_DIALOG_BUTTON_ID_NO;
+            host.common_dialog.savedata.btn[1] = "YES";
+            host.common_dialog.savedata.btn_val[1] = SCE_SAVEDATA_DIALOG_BUTTON_ID_YES;
+            break;
+        case SCE_SAVEDATA_DIALOG_SYSMSG_TYPE_FILE_CORRUPTED:
+            host.common_dialog.savedata.msg = "The file is corrupt";
+            host.common_dialog.savedata.btn_num = 1;
+            host.common_dialog.savedata.btn[0] = "OK";
+            host.common_dialog.savedata.btn_val[0] = SCE_SAVEDATA_DIALOG_BUTTON_ID_OK;
+            break;
+        case SCE_SAVEDATA_DIALOG_SYSMSG_TYPE_NOSPACE_CONTINUABLE:
+            host.common_dialog.savedata.msg = "Could not save the file.\n\
+				There is not enough free space on the memory card.";
+            host.common_dialog.savedata.btn_num = 1;
+            host.common_dialog.savedata.btn[0] = "OK";
+            host.common_dialog.savedata.btn_val[0] = SCE_SAVEDATA_DIALOG_BUTTON_TYPE_OK;
+            break;
+        case SCE_SAVEDATE_DIALOG_SYSMSG_TYPE_NODATA_IMPORT:
+            host.common_dialog.savedata.msg = "There is no saved data that can be used with this application.\n\
+				If the saved data you want to use is on the memory card, select the \"import saved data\" icon on the LiveArea screen.";
+            host.common_dialog.savedata.btn_num = 1;
+            host.common_dialog.savedata.btn[0] = "OK";
+            host.common_dialog.savedata.btn_val[0] = SCE_SAVEDATA_DIALOG_BUTTON_ID_OK;
             break;
         }
         break;

@@ -20,6 +20,8 @@
 #include <host/app_util.h>
 #include <mem/ptr.h>
 
+#define SCE_SAVEDATA_DIALOG_ERROR_PARAM 0x80100b01
+
 enum SceSaveDataDialogMode {
     SCE_SAVEDATA_DIALOG_MODE_FIXED = 1,
     SCE_SAVEDATA_DIALOG_MODE_LIST = 2,
