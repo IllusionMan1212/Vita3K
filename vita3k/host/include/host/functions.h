@@ -22,7 +22,7 @@
 
 struct SfoFile;
 
-void install_pup(const std::string &pup, const std::string &pref_path);
+void install_pup(const std::string &pup, const std::string &pref_path, uint32_t *progress = 0);
 
 namespace sfo {
 bool get_data_by_id(std::string &out_data, SfoFile &file, int id);
